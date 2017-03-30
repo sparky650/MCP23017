@@ -67,7 +67,6 @@ public:
 	{
 		timeoutTime = 1000UL;
 		timeoutFlag = false;
-		// bufOLAT = 0x0000;
 	}
 
 	/**
@@ -103,7 +102,6 @@ private:
 	inline uint8_t pinToMask(uint8_t pin) {return 1 << (pin % 8);}
 	inline MCP23017_Register_t regAB(MCP23017_RegisterGeneric_t regG, MCP23017_Port_t port)
 	{return (MCP23017_Register_t)((uint8_t)regG + (uint8_t)port);}
-	// uint16_t bufOLAT;
 };
 
 #endif // __MCP23017_h_
