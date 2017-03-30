@@ -13,7 +13,7 @@
 #include <Wire.h>
 #include "utility/wireUtil.h"
 
-enum MCP23017_Register
+enum MCP23017_Register_t
 {
 	IODIRA = 0x00,
 	IODIRB = 0x01,
@@ -39,7 +39,7 @@ enum MCP23017_Register
 	OLATB = 0x15
 };
 
-enum MCP23017_RegisterGeneric
+enum MCP23017_RegisterGeneric_t
 {
 	IODIR = 0x00,
 	IPOL = 0x02,
@@ -54,45 +54,55 @@ enum MCP23017_RegisterGeneric
 	OLAT = 0x14
 };
 
-enum MCP23017_Port {A = 0x00, B = 0x01};
+enum MCP23017_Port_t {A = 0x00, B = 0x01};
 
-static const uint8_t defaultPort = 0x20;
+static const uint8_t defaultAddress = 0x20;
 
-class MCP23017: public wireUtil<MCP23017_Register>
+class MCP23017: public wireUtil<MCP23017_Register_t>
 {
 public:
+	using wireUtil::begin;
+
 	MCP23017()
 	{
 		timeoutTime = 1000UL;
 		timeoutFlag = false;
 		// bufOLAT = 0x0000;
 	}
-	void begin();
-	void begin(uint8_t);
-#if defined(ARDUINO_ARCH_ESP8266)
-	void begin(uint8_t, uint8_t, uint8_t);
-#endif // ARDUINO_ARCH_ESP8266
+
+	/**
+	* @brief Initialize the chip at the default address
+	*
+	*/
+	void begin()
+	{
+		wireUtil::begin(defaultAddress);
+	}
 
 	void pinMode(uint8_t, uint8_t);
 	void digitalWrite(uint8_t, bool);
 	bool digitalRead(uint8_t);
 
-	void portMode(MCP23017_Port, uint8_t);
-	void writePort(MCP23017_Port, uint8_t);
-	uint8_t readPort(MCP23017_Port);
+	void portMode(MCP23017_Port_t, uint8_t);
+	void writePort(MCP23017_Port_t, uint8_t);
+	uint8_t readPort(MCP23017_Port_t);
 
 	void chipMode(uint8_t);
 	void writeChip(uint16_t);
 	uint16_t readChip();
 
+	void setInputPolarity(bool);
+	void setInputPolarity(MCP23017_Port_t, bool);
+	void setInputPolarity(uint8_t, bool);
+
 	void setInt(uint8_t, bool);
 
 private:
-	inline MCP23017_Port pinToPort(uint8_t pin) {return (pin < 8) ? A : B;}
+	inline MCP23017_Port_t pinToPort(uint8_t pin) {return (pin < 8) ? A : B;}
 	inline uint8_t pinToBit(uint8_t pin) {return pin % 8;}
 	inline uint8_t pinToMask(uint8_t pin) {return 1 << (pin % 8);}
-	inline MCP23017_Register regAB(MCP23017_RegisterGeneric regG, MCP23017_Port port)
-	{return (MCP23017_Register)((uint8_t)regG + (uint8_t)port);}
+	inline MCP23017_Register_t regAB(MCP23017_RegisterGeneric_t regG, MCP23017_Port_t port)
+	{return (MCP23017_Register_t)((uint8_t)regG + (uint8_t)port);}
 	// uint16_t bufOLAT;
 };
 

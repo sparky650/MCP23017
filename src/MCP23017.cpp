@@ -1,42 +1,6 @@
 #include "MCP23017.h"
 
 /**
- * @brief Initialize the chip at the default address
- *
- */
-void MCP23017::begin()
-{
-	begin(defaultPort);
-}
-
-/**
- * @brief Initialize the chip
- *
- * @param address Address of the chip
- */
-void MCP23017::begin(uint8_t address)
-{
-	this->address = address;
-	Wire.begin();
-}
-
-#if defined(ARDUINO_ARCH_ESP8266)
-/**
- * @brief Initialize the chip at a specific address and pins
- * @details This is only available on archatectures that support arbitrary SDA and SCL pins.
- *
- * @param address Address of the chip
- * @param SDApin Pin number for the SDA signal
- * @param SCLpin Pin number for the SCL signal
- */
-void MCP23017::begin(uint8_t address, uint8_t SDApin, uint8_t SCLpin)
-{
-	this->address = address;
-	Wire.begin(SDApin, SCLpin);
-}
-#endif // ARDUINO_ARCH_ESP8266
-
-/**
  * @brief Set the charicteristic of the IO pin
  *
  * @param pin Pin number
@@ -78,6 +42,7 @@ void MCP23017::pinMode(uint8_t pin, uint8_t mode)
  */
 void MCP23017::digitalWrite(uint8_t pin, bool state)
 {
+	uint8_t tempOLAT;
 	tempOLAT = readRegister(regAB(OLAT, pinToPort(pin)));
 	if (state) { tempOLAT |= pinToMask(pin); }
 	else { tempOLAT &= ~pinToMask(pin); }
@@ -102,7 +67,7 @@ bool MCP23017::digitalRead(uint8_t pin)
  * @param port Port to set (A, B)
  * @param mode IO type (INPUT, INPUT_PULLUP, OUTPUT)
  */
-void MCP23017::portMode(MCP23017_Port port, uint8_t mode)
+void MCP23017::portMode(MCP23017_Port_t port, uint8_t mode)
 {
 	uint8_t tempIODIR, tempGPPU;
 
@@ -132,7 +97,7 @@ void MCP23017::portMode(MCP23017_Port port, uint8_t mode)
  * @param port Port to output to (A, B)
  * @param state Byte to write
  */
-void MCP23017::writePort(MCP23017_Port port, uint8_t state)
+void MCP23017::writePort(MCP23017_Port_t port, uint8_t state)
 {
 	writeRegister(regAB(OLAT, port), state);
 }
@@ -143,7 +108,7 @@ void MCP23017::writePort(MCP23017_Port port, uint8_t state)
  * @param port Port to read from (A, B)
  * @return data from the port
  */
-uint8_t MCP23017::readPort(MCP23017_Port port)
+uint8_t MCP23017::readPort(MCP23017_Port_t port)
 {
 	return readRegister(regAB(GPIO, port));
 }
@@ -203,9 +168,24 @@ uint16_t MCP23017::readChip()
 	return state;
 }
 
-// MCP23017_Register MCP23017::regAB(MCP23017_RegisterGeneric regG, MCP23017_Port port)
-// {
-// 	return (MCP23017_Register)((uint8_t)regG + (uint8_t)port);
-// }
+void MCP23017::setInputPolarity(bool state)
+{
 
+}
 
+void MCP23017::setInputPolarity(MCP23017_Port_t port, bool state)
+{
+
+}
+
+/**
+ * @brief Set the input polarity of an individual pin
+ * @details [long description]
+ *
+ * @param pin [description]
+ * @param state [description]
+ */
+void MCP23017::setInputPolarity(uint8_t pin, bool state)
+{
+
+}
