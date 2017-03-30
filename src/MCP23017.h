@@ -73,10 +73,7 @@ public:
 	* @brief Initialize the chip at the default address
 	*
 	*/
-	void begin()
-	{
-		wireUtil::begin(defaultAddress);
-	}
+	void begin() {begin(defaultAddress);}
 
 	void pinMode(uint8_t, uint8_t);
 	void digitalWrite(uint8_t, bool);
