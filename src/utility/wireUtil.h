@@ -46,9 +46,9 @@ public:
 #endif // ARDUINO_ARCH_ESP8266
 
 	bool writeRegister(REGTYPE, uint8_t);
-	bool writeRegisters(REGTYPE reg, uint8_t *buffer, uint8_t len);
+	bool writeRegisters(REGTYPE, uint8_t *, uint8_t);
 	uint8_t readRegister(REGTYPE);
-	bool readRegisters(REGTYPE reg, uint8_t *buffer, uint8_t len);
+	bool readRegisters(REGTYPE, uint8_t *, uint8_t);
 
 protected:
 	uint8_t address; ///< Hardware address of the device
@@ -65,7 +65,7 @@ private:
 
 /**
  * @brief Initialize the chip at a specific address
- * 
+ *
  * @param address  Address of the chip
  */
 template <typename REGTYPE>
