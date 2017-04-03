@@ -8,30 +8,21 @@
  */
 void MCP23017::pinMode(uint8_t pin, uint8_t mode)
 {
-	uint8_t tempIODIR, tempGPPU, mask;
-
-	tempIODIR = readRegister(regAB(IODIR, pinToPort(pin)));
-	tempGPPU = readRegister(regAB(GPPU, pinToPort(pin)));
-	mask = pinToMask(pin);
-
 	if (mode == INPUT)
 	{
-		tempIODIR |= mask;
-		tempGPPU &= ~mask;
+		readModifyWritePin<IODIR>(pin, true);
+		readModifyWritePin<GPPU>(pin, false);
 	}
 	else if (mode == INPUT_PULLUP)
 	{
-		tempIODIR |= mask;
-		tempGPPU |= mask;
+		readModifyWritePin<IODIR>(pin, true);
+		readModifyWritePin<GPPU>(pin, true);
 	}
 	else if (mode == OUTPUT)
 	{
-		tempIODIR &= ~mask;
-		tempGPPU &= ~mask;
+		readModifyWritePin<IODIR>(pin, false);
+		readModifyWritePin<GPPU>(pin, false);
 	}
-
-	writeRegister(regAB(IODIR, pinToPort(pin)), tempIODIR);
-	writeRegister(regAB(GPPU, pinToPort(pin)), tempGPPU);
 }
 
 /**
@@ -42,7 +33,7 @@ void MCP23017::pinMode(uint8_t pin, uint8_t mode)
  */
 void MCP23017::digitalWrite(uint8_t pin, bool state)
 {
-	readSetWritePin<OLAT>(pin, state);
+	readModifyWritePin<OLAT>(pin, state);
 }
 
 /**
@@ -165,6 +156,9 @@ uint16_t MCP23017::readChip()
  */
 void MCP23017::setInputPolarity(bool state)
 {
+	// uint8_t buffer[2];
+	// memset(buffer, state ? 0xFF : 0x00, 2);
+	// writeRegisters(IPOLA, buffer, 2);
 	writeRegister(IPOLA, state ? 0xFF : 0x00);
 	writeRegister(IPOLB, state ? 0xFF : 0x00);
 }
@@ -188,7 +182,62 @@ void MCP23017::setInputPolarity(MCP23017_Port_t port, bool state)
  */
 void MCP23017::setInputPolarity(uint8_t pin, bool state)
 {
-	readSetWritePin<IPOL>(pin, state);
+	readModifyWritePin<IPOL>(pin, state);
+}
+
+/**
+ * @brief Get the pin that caused an interrupt
+ *
+ * @return Pin number
+ */
+uint8_t MCP23017::getInterrupt()
+{
+	uint8_t tempA, tempB;
+	tempA = readRegister(INTFA);
+	tempB = readRegister(INTFB);
+
+	if (tempA & 0x01) { return 0; }
+	else if (tempA & 0x02) { return 1; }
+	else if (tempA & 0x04) { return 2; }
+	else if (tempA & 0x08) { return 3; }
+	else if (tempA & 0x10) { return 4; }
+	else if (tempA & 0x20) { return 5; }
+	else if (tempA & 0x40) { return 6; }
+	else if (tempA & 0x80) { return 7; }
+	else if (tempB & 0x01) { return 8; }
+	else if (tempB & 0x02) { return 9; }
+	else if (tempB & 0x04) { return 10; }
+	else if (tempB & 0x08) { return 11; }
+	else if (tempB & 0x10) { return 12; }
+	else if (tempB & 0x20) { return 13; }
+	else if (tempB & 0x40) { return 14; }
+	else if (tempB & 0x80) { return 15; }
+
+	return 255;
+}
+
+/**
+ * @brief Get a snapshot of all of the input pins at the last interrupt
+ * 
+ * @return Snapshot of the input register
+ */
+uint16_t MCP23017:: getInterruptCapture()
+{
+	uint8_t result[2];
+	readRegisters(INTCAPA, result, 2);
+	return result[0] + (result[1] << 8);
+}
+
+/**
+ * @brief 
+ * 
+ * @param port [description]
+ * 
+ * @return [description]
+ */
+uint8_t MCP23017::getInterruptCapture(MCP23017_Port_t port)
+{
+	return readRegister(regAB(INTCAP, port));
 }
 
 /**
@@ -199,7 +248,7 @@ void MCP23017::setInputPolarity(uint8_t pin, bool state)
  */
 void MCP23017::setInterrupt(uint8_t pin, bool state)
 {
-	readSetWritePin<GPINTEN>(pin, state);
+	readModifyWritePin<GPINTEN>(pin, state);
 }
 
 /**
@@ -209,6 +258,10 @@ void MCP23017::setInterrupt(uint8_t pin, bool state)
  */
 void MCP23017::setInterrupt(uint16_t mask)
 {
+	// uint8_t buffer[2];
+	// buffer[0] = (uint8_t)(mask & 0xFF);
+	// buffer[1] = (uint8_t)(mask >> 8);
+	// writeRegisters(GPINTENA, buffer, 2);
 	writeRegister(GPINTENA, (uint8_t)(mask & 0xFF));
 	writeRegister(GPINTENB, (uint8_t)(mask >> 8));
 }
@@ -247,7 +300,7 @@ void MCP23017::setIntPinMode(MCP23017_interruptPinMode_t interruptPinMode)
 }
 
 template<MCP23017_RegisterGeneric_t reg>
-void MCP23017::readSetWritePin(uint8_t pin, bool state)
+void MCP23017::readModifyWritePin(uint8_t pin, bool state)
 {
 	uint8_t tempReg;
 	tempReg = readRegister(regAB(reg, pinToPort(pin)));
