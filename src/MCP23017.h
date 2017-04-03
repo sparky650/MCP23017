@@ -1,8 +1,8 @@
 /**
  * @file	MCP23017.h
  * @author	Keegan Morrow
- * @version 0.0.1
- * @breif Arduino library for the Microchip MCP23017 IO Expander
+ * @version 0.1.0
+ * @brief Arduino library for the Microchip MCP23017 IO Expander
  *
  */
 
@@ -56,6 +56,8 @@ enum MCP23017_RegisterGeneric_t
 
 enum MCP23017_Port_t {A = 0x00, B = 0x01};
 
+enum MCP23017_interruptPinMode_t {openDrain, lowOnInt, highOnInt};
+
 static const uint8_t defaultAddress = 0x20;
 
 class MCP23017: public wireUtil<MCP23017_Register_t>
@@ -91,9 +93,14 @@ public:
 	void setInputPolarity(MCP23017_Port_t, bool);
 	void setInputPolarity(uint8_t, bool);
 
-	void setInt(uint8_t, bool);
+	void setInterrupt(uint8_t, bool);
+	void setInterrupt(uint16_t);
+	void interruptMirror(bool);
+	void setIntPinMode(MCP23017_interruptPinMode_t);
 
 private:
+	template<MCP23017_RegisterGeneric_t reg> void readSetWritePin(uint8_t, bool);
+	template<MCP23017_Register_t reg> void readSetWriteBit(uint8_t, bool);
 	inline MCP23017_Port_t pinToPort(uint8_t pin) {return (pin < 8) ? A : B;}
 	inline uint8_t pinToBit(uint8_t pin) {return pin % 8;}
 	inline uint8_t pinToMask(uint8_t pin) {return 1 << (pin % 8);}
