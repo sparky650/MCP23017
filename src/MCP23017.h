@@ -100,7 +100,6 @@ public:
 
 private:
 	template<MCP23017_RegisterGeneric_t reg> void readSetWritePin(uint8_t, bool);
-	template<MCP23017_Register_t reg> void readSetWriteBit(uint8_t, bool);
 	inline MCP23017_Port_t pinToPort(uint8_t pin) {return (pin < 8) ? A : B;}
 	inline uint8_t pinToBit(uint8_t pin) {return pin % 8;}
 	inline uint8_t pinToMask(uint8_t pin) {return 1 << (pin % 8);}
