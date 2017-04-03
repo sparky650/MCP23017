@@ -2,7 +2,7 @@
  * @file	wireUtil.h
  * @author	Keegan Morrow
  * @version	1.0.0
- * @breif Utility base class for reading and writing registers on i2c devices
+ * @brief Utility base class for reading and writing registers on i2c devices
  *
  */
 
@@ -15,7 +15,7 @@
 /**
  * @brief Utility base class for reading and writing registers on i2c devices
  *
- * @tparam REGTYPE An initialized enum type that lists the valad registers for the device
+ * @tparam REGTYPE An initialized enum type that lists the valid registers for the device
  */
 template <typename REGTYPE>
 class wireUtil
@@ -34,7 +34,7 @@ public:
 	 */
 	void attachNACKhandler(void (*NACKhandler)(uint8_t)) {this->NACKhandler = NACKhandler;}
 
-	unsigned long timeoutTime; ///< Amout of time to wait for a succesful read
+	unsigned long timeoutTime; ///< Amount of time to wait for a successful read
 	bool timeoutFlag; ///< Set to true if there is a timeout event, reset on the next read
 
 	inline bool getTimeoutFlag() {return timeoutFlag;}
@@ -49,6 +49,7 @@ public:
 	bool writeRegisters(REGTYPE, uint8_t *, uint8_t);
 	uint8_t readRegister(REGTYPE);
 	bool readRegisters(REGTYPE, uint8_t *, uint8_t);
+	bool setRegisterBit(REGTYPE, uint8_t, bool);
 
 protected:
 	uint8_t address; ///< Hardware address of the device
@@ -77,7 +78,7 @@ void wireUtil<REGTYPE>::begin(uint8_t address)
 
 /**
  * @brief Initialize the chip at a specific address and pins
- * @details This is only available on archatectures that support arbitrary SDA and SCL pins.
+ * @details This is only available on architectures that support arbitrary SDA and SCL pins.
  *
  * @param address Address of the chip
  * @param SDApin Pin number for the SDA signal
@@ -200,6 +201,24 @@ bool wireUtil<REGTYPE>::readRegisters(REGTYPE reg, uint8_t *buffer, uint8_t len)
 		buffer[x] = Wire.read();
 	}
 	return true;
+}
+
+/**
+ * @brief Read modify write a bit on a register
+ * 
+ * @param reg register to modify
+ * @param bit index of the bit to set
+ * @param state state of the bit to set
+ * @return true on success
+ */
+template <typename REGTYPE>
+bool wireUtil<REGTYPE>::setRegisterBit(REGTYPE reg, uint8_t bit, bool state)
+{
+	uint8_t tempReg;
+	tempReg = readRegister(reg);
+	if (state) { tempReg |= (uint8_t)(1 << bit); }
+	else { tempReg &= ~(uint8_t)(1 << bit); }
+	return writeRegister(reg, tempReg);
 }
 
 #endif // __wireUtil_h_
