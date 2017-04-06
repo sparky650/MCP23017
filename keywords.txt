@@ -1,23 +1,30 @@
-#######################################
 # Syntax Coloring Map For MCP23017
-#######################################
 
-#######################################
-# Datatypes (KEYWORD1)
-#######################################
+MCP23017			KEYWORD1
+MCP23017_Port_t		KEYWORD1
 
-MCP23017	KEYWORD1
+pinMode				KEYWORD2
+digitalWrite		KEYWORD2
+digitalRead			KEYWORD2
+portMode			KEYWORD2
+writePort			KEYWORD2
+readPort			KEYWORD2
+chipMode			KEYWORD2
+writeChip			KEYWORD2
+readChip			KEYWORD2
+setInputPolarity	KEYWORD2
+getInterrupt		KEYWORD2
+getInterruptCapture	KEYWORD2
+setInterrupt		KEYWORD2
+interruptMirror		KEYWORD2
+setIntPinMode		KEYWORD2
+attachTimeoutHandler	KEYWORD2
+attachErrorHandler	KEYWORD2
+getTimeoutFlag		KEYWORD2	
+writeRegisters		KEYWORD2
+writeRegisters		KEYWORD2
+readRegisters		KEYWORD2
+setRegisterBit		KEYWORD2
 
-#######################################
-# Methods and Functions (KEYWORD2)
-#######################################
-
-#doSomething	KEYWORD2
-
-#######################################
-# Instances (KEYWORD2)
-#######################################
-
-#######################################
-# Constants (LITERAL1)
-#######################################
+PORT_A				LITERAL1
+PORT_B				LITERAL1

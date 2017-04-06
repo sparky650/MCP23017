@@ -217,9 +217,9 @@ uint8_t MCP23017::getInterrupt()
 }
 
 /**
- * @brief Get a snapshot of all of the input pins at the last interrupt
- * 
- * @return Snapshot of the input register
+ * @brief Get a snapshot of all the input pins at the last interrupt
+ *
+ * @return Snapshot of the input registers
  */
 uint16_t MCP23017:: getInterruptCapture()
 {
@@ -229,11 +229,11 @@ uint16_t MCP23017:: getInterruptCapture()
 }
 
 /**
- * @brief 
- * 
- * @param port [description]
- * 
- * @return [description]
+ * @brief Get a snapshot of the state of all the pins on a port at the last interrupt
+ *
+ * @param port Port to get the snapshot from
+ *
+ * @return Snapshot of the port
  */
 uint8_t MCP23017::getInterruptCapture(MCP23017_Port_t port)
 {
@@ -249,6 +249,17 @@ uint8_t MCP23017::getInterruptCapture(MCP23017_Port_t port)
 void MCP23017::setInterrupt(uint8_t pin, bool state)
 {
 	readModifyWritePin<GPINTEN>(pin, state);
+}
+
+/**
+ * @brief Set interrupt enable on a port
+ * 
+ * @param port Port to set
+ * @param state 
+ */
+void MCP23017::setInterrupt(MCP23017_Port_t port, bool state)
+{
+	writeRegister(regAB(GPINTEN, port), state ? 0xFF : 0x00);
 }
 
 /**

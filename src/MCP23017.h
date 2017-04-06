@@ -1,7 +1,7 @@
 /**
  * @file	MCP23017.h
  * @author	Keegan Morrow
- * @version 0.1.0
+ * @version 0.1.1
  * @brief Arduino library for the Microchip MCP23017 IO Expander
  *
  */
@@ -54,7 +54,7 @@ enum MCP23017_RegisterGeneric_t
 	OLAT = 0x14
 };
 
-enum MCP23017_Port_t {A = 0x00, B = 0x01};
+enum MCP23017_Port_t {PORT_A = 0x00, PORT_B = 0x01};
 
 enum MCP23017_interruptPinMode_t {openDrain, lowOnInt, highOnInt};
 
@@ -97,13 +97,14 @@ public:
 	uint16_t getInterruptCapture();
 	uint8_t getInterruptCapture(MCP23017_Port_t);
 	void setInterrupt(uint8_t, bool);
+	void setInterrupt(MCP23017_Port_t, bool);
 	void setInterrupt(uint16_t);
 	void interruptMirror(bool);
 	void setIntPinMode(MCP23017_interruptPinMode_t);
 
 private:
 	template<MCP23017_RegisterGeneric_t reg> void readModifyWritePin(uint8_t, bool);
-	inline MCP23017_Port_t pinToPort(uint8_t pin) {return (pin < 8) ? A : B;}
+	inline MCP23017_Port_t pinToPort(uint8_t pin) {return (pin < 8) ? PORT_A : PORT_B;}
 	inline uint8_t pinToBit(uint8_t pin) {return pin % 8;}
 	inline uint8_t pinToMask(uint8_t pin) {return 1 << (pin % 8);}
 	inline MCP23017_Register_t regAB(MCP23017_RegisterGeneric_t regG, MCP23017_Port_t port)

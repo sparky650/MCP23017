@@ -30,13 +30,18 @@ public:
 	/**
 	 * @brief Attach a function to be called on a write NACK
 	 *
-	 * @param NACKhandler Pointer to a 'void f(uint8_t)' function. This will be passed the Wire status.
+	 * @param errorHandler Pointer to a 'void f(uint8_t)' function. This will be passed the Wire status.
 	 */
-	void attachNACKhandler(void (*NACKhandler)(uint8_t)) {this->NACKhandler = NACKhandler;}
+	void attachErrorHandler(void (*errorHandler)(uint8_t)) {this->errorHandler = errorHandler;}
 
 	unsigned long timeoutTime; ///< Amount of time to wait for a successful read
 	bool timeoutFlag; ///< Set to true if there is a timeout event, reset on the next read
 
+	/**
+	 * @brief Safe method to read the state of the timeout flag
+	 * 
+	 * @return State of the timeout flag
+	 */
 	inline bool getTimeoutFlag() {return timeoutFlag;}
 
 	virtual void begin();
@@ -56,7 +61,7 @@ protected:
 
 private:
 	void (*timeOutHandler)(void);
-	void (*NACKhandler)(uint8_t);
+	void (*errorHandler)(uint8_t);
 };
 
 /*
@@ -76,6 +81,7 @@ void wireUtil<REGTYPE>::begin(uint8_t address)
 	Wire.begin();
 }
 
+#if defined(ARDUINO_ARCH_ESP8266)
 /**
  * @brief Initialize the chip at a specific address and pins
  * @details This is only available on architectures that support arbitrary SDA and SCL pins.
@@ -84,7 +90,6 @@ void wireUtil<REGTYPE>::begin(uint8_t address)
  * @param SDApin Pin number for the SDA signal
  * @param SCLpin Pin number for the SCL signal
  */
-#if defined(ARDUINO_ARCH_ESP8266)
 template <typename REGTYPE>
 void wireUtil<REGTYPE>::begin(uint8_t address, uint8_t SDApin, uint8_t SCLpin)
 {
@@ -127,9 +132,9 @@ bool wireUtil<REGTYPE>::writeRegisters(REGTYPE reg, uint8_t *buffer, uint8_t len
 	uint8_t status;
 	status = Wire.endTransmission();
 	if (status == 0) { return true; }
-	else if (NACKhandler != NULL)
+	else if (errorHandler != NULL)
 	{
-		(*NACKhandler)(status);
+		(*errorHandler)(status);
 		return false;
 	}
 	return false;
@@ -148,7 +153,6 @@ uint8_t wireUtil<REGTYPE>::readRegister(REGTYPE reg)
 	Wire.beginTransmission(address);
 	Wire.write((uint8_t)reg);
 	Wire.endTransmission(false);
-
 	Wire.requestFrom(address, (uint8_t) 1);
 
 	timeoutFlag = false;
