@@ -77,6 +77,14 @@ public:
 	*/
 	void begin() {begin(defaultAddress);}
 
+	/**
+	 * @brief Get the hardware address from the logical address of the chip
+	 * 
+	 * @param a Logical address of the chip
+	 * @return Hardware address of the chip
+	 */
+	uint8_t addressIndex(uint8_t a) {return a + defaultAddress;}
+
 	void pinMode(uint8_t, uint8_t);
 	void digitalWrite(uint8_t, bool);
 	bool digitalRead(uint8_t);
