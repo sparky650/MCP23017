@@ -1,7 +1,7 @@
 /**
  * @file	MCP23017.h
  * @author	Keegan Morrow
- * @version 0.1.1
+ * @version 0.1.2
  * @brief Arduino library for the Microchip MCP23017 IO Expander
  *
  */
@@ -58,7 +58,7 @@ enum MCP23017_Port_t {PORT_A = 0x00, PORT_B = 0x01};
 
 enum MCP23017_interruptPinMode_t {openDrain, lowOnInt, highOnInt};
 
-static const uint8_t defaultAddress = 0x20;
+static const uint8_t MCP23017_defaultAddress = 0x20;
 
 class MCP23017: public wireUtil<MCP23017_Register_t, uint8_t>
 {
@@ -75,7 +75,7 @@ public:
 	* @brief Initialize the chip at the default address
 	*
 	*/
-	void begin() {begin(defaultAddress);}
+	void begin() {begin(MCP23017_defaultAddress);}
 
 	/**
 	 * @brief Get the hardware address from the logical address of the chip
@@ -83,7 +83,7 @@ public:
 	 * @param a Logical address of the chip
 	 * @return Hardware address of the chip
 	 */
-	uint8_t addressIndex(uint8_t a) {return a + defaultAddress;}
+	uint8_t addressIndex(uint8_t a) {return a + MCP23017_defaultAddress;}
 
 	void pinMode(uint8_t, uint8_t);
 	void digitalWrite(uint8_t, bool);
