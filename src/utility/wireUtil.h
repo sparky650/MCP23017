@@ -198,7 +198,7 @@ bool wireUtil<REGTYPE, DATATYPE>::readRegisters(REGTYPE reg, DATATYPE *buffer, u
 
 	Wire.requestFrom(address, (uint8_t) bufferSize);
 
-	while (Wire.available() < bufferSize)
+	while (Wire.available() < (int8_t)bufferSize)
 	{
 		if (abortTime < millis())
 		{
