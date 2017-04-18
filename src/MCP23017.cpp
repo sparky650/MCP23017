@@ -10,18 +10,18 @@ void MCP23017::pinMode(uint8_t pin, uint8_t mode)
 {
 	if (mode == INPUT)
 	{
-		readModifyWritePin<IODIR>(pin, true);
-		readModifyWritePin<GPPU>(pin, false);
+		readModifyWritePin<IODIR_r>(pin, true);
+		readModifyWritePin<GPPU_r>(pin, false);
 	}
 	else if (mode == INPUT_PULLUP)
 	{
-		readModifyWritePin<IODIR>(pin, true);
-		readModifyWritePin<GPPU>(pin, true);
+		readModifyWritePin<IODIR_r>(pin, true);
+		readModifyWritePin<GPPU_r>(pin, true);
 	}
 	else if (mode == OUTPUT)
 	{
-		readModifyWritePin<IODIR>(pin, false);
-		readModifyWritePin<GPPU>(pin, false);
+		readModifyWritePin<IODIR_r>(pin, false);
+		readModifyWritePin<GPPU_r>(pin, false);
 	}
 }
 
@@ -33,7 +33,7 @@ void MCP23017::pinMode(uint8_t pin, uint8_t mode)
  */
 void MCP23017::digitalWrite(uint8_t pin, bool state)
 {
-	readModifyWritePin<OLAT>(pin, state);
+	readModifyWritePin<OLAT_r>(pin, state);
 }
 
 /**
@@ -45,7 +45,7 @@ void MCP23017::digitalWrite(uint8_t pin, bool state)
  */
 bool MCP23017::digitalRead(uint8_t pin)
 {
-	return readRegister(regAB(GPIO, pinToPort(pin))) & pinToMask(pin);
+	return readRegister(regAB(GPIO_r, pinToPort(pin))) & pinToMask(pin);
 }
 
 /**
@@ -58,18 +58,18 @@ void MCP23017::portMode(MCP23017_Port_t port, uint8_t mode)
 {
 	if (mode == INPUT)
 	{
-		writeRegister(regAB(IODIR, port), 0xFF);
-		writeRegister(regAB(GPPU, port), 0x00);
+		writeRegister(regAB(IODIR_r, port), 0xFF);
+		writeRegister(regAB(GPPU_r, port), 0x00);
 	}
 	else if (mode == INPUT_PULLUP)
 	{
-		writeRegister(regAB(IODIR, port), 0xFF);
-		writeRegister(regAB(GPPU, port), 0xFF);
+		writeRegister(regAB(IODIR_r, port), 0xFF);
+		writeRegister(regAB(GPPU_r, port), 0xFF);
 	}
 	else if (mode == OUTPUT)
 	{
-		writeRegister(regAB(IODIR, port), 0x00);
-		writeRegister(regAB(GPPU, port), 0x00);
+		writeRegister(regAB(IODIR_r, port), 0x00);
+		writeRegister(regAB(GPPU_r, port), 0x00);
 	}
 }
 
@@ -81,7 +81,7 @@ void MCP23017::portMode(MCP23017_Port_t port, uint8_t mode)
  */
 void MCP23017::writePort(MCP23017_Port_t port, uint8_t state)
 {
-	writeRegister(regAB(OLAT, port), state);
+	writeRegister(regAB(OLAT_r, port), state);
 }
 
 /**
@@ -92,7 +92,7 @@ void MCP23017::writePort(MCP23017_Port_t port, uint8_t state)
  */
 uint8_t MCP23017::readPort(MCP23017_Port_t port)
 {
-	return readRegister(regAB(GPIO, port));
+	return readRegister(regAB(GPIO_r, port));
 }
 
 /**
@@ -104,24 +104,24 @@ void MCP23017::chipMode(uint8_t mode)
 {
 	if (mode == INPUT)
 	{
-		writeRegister(IODIRA, 0xFF);
-		writeRegister(IODIRB, 0xFF);
-		writeRegister(GPPUA, 0x00);
-		writeRegister(GPPUB, 0x00);
+		writeRegister(IODIRA_r, 0xFF);
+		writeRegister(IODIRB_r, 0xFF);
+		writeRegister(GPPUA_r, 0x00);
+		writeRegister(GPPUB_r, 0x00);
 	}
 	else if (mode == INPUT_PULLUP)
 	{
-		writeRegister(IODIRA, 0xFF);
-		writeRegister(IODIRB, 0xFF);
-		writeRegister(GPPUA, 0xFF);
-		writeRegister(GPPUB, 0xFF);
+		writeRegister(IODIRA_r, 0xFF);
+		writeRegister(IODIRB_r, 0xFF);
+		writeRegister(GPPUA_r, 0xFF);
+		writeRegister(GPPUB_r, 0xFF);
 	}
 	else if (mode == OUTPUT)
 	{
-		writeRegister(IODIRA, 0x00);
-		writeRegister(IODIRB, 0x00);
-		writeRegister(GPPUA, 0x00);
-		writeRegister(GPPUB, 0x00);
+		writeRegister(IODIRA_r, 0x00);
+		writeRegister(IODIRB_r, 0x00);
+		writeRegister(GPPUA_r, 0x00);
+		writeRegister(GPPUB_r, 0x00);
 	}
 }
 
@@ -132,8 +132,8 @@ void MCP23017::chipMode(uint8_t mode)
  */
 void MCP23017::writeChip(uint16_t state)
 {
-	writeRegister(OLATA, (uint8_t)(state & 0xFF));
-	writeRegister(OLATB, (uint8_t)(state >> 8));
+	writeRegister(OLATA_r, (uint8_t)(state & 0xFF));
+	writeRegister(OLATB_r, (uint8_t)(state >> 8));
 }
 
 /**
@@ -144,8 +144,8 @@ void MCP23017::writeChip(uint16_t state)
 uint16_t MCP23017::readChip()
 {
 	uint16_t state;
-	state = readRegister(GPIOA);
-	state &= (readRegister(GPIOB) << 8);
+	state = readRegister(GPIOA_r);
+	state &= (readRegister(GPIOB_r) << 8);
 	return state;
 }
 
@@ -159,8 +159,8 @@ void MCP23017::setInputPolarity(bool state)
 	// uint8_t buffer[2];
 	// memset(buffer, state ? 0xFF : 0x00, 2);
 	// writeRegisters(IPOLA, buffer, 2);
-	writeRegister(IPOLA, state ? 0xFF : 0x00);
-	writeRegister(IPOLB, state ? 0xFF : 0x00);
+	writeRegister(IPOLA_r, state ? 0xFF : 0x00);
+	writeRegister(IPOLB_r, state ? 0xFF : 0x00);
 }
 
 /**
@@ -171,7 +171,7 @@ void MCP23017::setInputPolarity(bool state)
  */
 void MCP23017::setInputPolarity(MCP23017_Port_t port, bool state)
 {
-	writeRegister(regAB(IPOL, port), state ? 0xFF : 0x00);
+	writeRegister(regAB(IPOL_r, port), state ? 0xFF : 0x00);
 }
 
 /**
@@ -182,7 +182,7 @@ void MCP23017::setInputPolarity(MCP23017_Port_t port, bool state)
  */
 void MCP23017::setInputPolarity(uint8_t pin, bool state)
 {
-	readModifyWritePin<IPOL>(pin, state);
+	readModifyWritePin<IPOL_r>(pin, state);
 }
 
 /**
@@ -193,8 +193,8 @@ void MCP23017::setInputPolarity(uint8_t pin, bool state)
 uint8_t MCP23017::getInterrupt()
 {
 	uint8_t tempA, tempB;
-	tempA = readRegister(INTFA);
-	tempB = readRegister(INTFB);
+	tempA = readRegister(INTFA_r);
+	tempB = readRegister(INTFB_r);
 
 	if (tempA & 0x01) { return 0; }
 	else if (tempA & 0x02) { return 1; }
@@ -224,7 +224,7 @@ uint8_t MCP23017::getInterrupt()
 uint16_t MCP23017:: getInterruptCapture()
 {
 	uint8_t result[2];
-	readRegisters(INTCAPA, result, 2);
+	readRegisters(INTCAPA_r, result, 2);
 	return result[0] + (result[1] << 8);
 }
 
@@ -237,7 +237,7 @@ uint16_t MCP23017:: getInterruptCapture()
  */
 uint8_t MCP23017::getInterruptCapture(MCP23017_Port_t port)
 {
-	return readRegister(regAB(INTCAP, port));
+	return readRegister(regAB(INTCAP_r, port));
 }
 
 /**
@@ -248,7 +248,7 @@ uint8_t MCP23017::getInterruptCapture(MCP23017_Port_t port)
  */
 void MCP23017::setInterrupt(uint8_t pin, bool state)
 {
-	readModifyWritePin<GPINTEN>(pin, state);
+	readModifyWritePin<GPINTEN_r>(pin, state);
 }
 
 /**
@@ -259,7 +259,7 @@ void MCP23017::setInterrupt(uint8_t pin, bool state)
  */
 void MCP23017::setInterrupt(MCP23017_Port_t port, bool state)
 {
-	writeRegister(regAB(GPINTEN, port), state ? 0xFF : 0x00);
+	writeRegister(regAB(GPINTEN_r, port), state ? 0xFF : 0x00);
 }
 
 /**
@@ -273,8 +273,8 @@ void MCP23017::setInterrupt(uint16_t mask)
 	// buffer[0] = (uint8_t)(mask & 0xFF);
 	// buffer[1] = (uint8_t)(mask >> 8);
 	// writeRegisters(GPINTENA, buffer, 2);
-	writeRegister(GPINTENA, (uint8_t)(mask & 0xFF));
-	writeRegister(GPINTENB, (uint8_t)(mask >> 8));
+	writeRegister(GPINTENA_r, (uint8_t)(mask & 0xFF));
+	writeRegister(GPINTENB_r, (uint8_t)(mask >> 8));
 }
 
 /**
@@ -284,7 +284,7 @@ void MCP23017::setInterrupt(uint16_t mask)
  */
 void MCP23017::interruptMirror(bool state)
 {
-	setRegisterBit(IOCONA, 6, state); // bit 6 is MIRROR
+	setRegisterBit(IOCONA_r, 6, state); // bit 6 is MIRROR
 }
 
 /**
@@ -296,17 +296,17 @@ void MCP23017::setIntPinMode(MCP23017_interruptPinMode_t interruptPinMode)
 {
 	if (interruptPinMode == openDrain)
 	{
-		setRegisterBit(IOCONA, 2, true); // bit 2 is ODR
+		setRegisterBit(IOCONA_r, 2, true); // bit 2 is ODR
 	}
 	else if (interruptPinMode == lowOnInt)
 	{
-		setRegisterBit(IOCONA, 2, false); // bit 2 is ODR
-		setRegisterBit(IOCONA, 1, false); // bit 1 is INTPOL
+		setRegisterBit(IOCONA_r, 2, false); // bit 2 is ODR
+		setRegisterBit(IOCONA_r, 1, false); // bit 1 is INTPOL
 	}
 	else if (interruptPinMode == highOnInt)
 	{
-		setRegisterBit(IOCONA, 2, false); // bit 2 is ODR
-		setRegisterBit(IOCONA, 1, true); // bit 1 is INTPOL
+		setRegisterBit(IOCONA_r, 2, false); // bit 2 is ODR
+		setRegisterBit(IOCONA_r, 1, true); // bit 1 is INTPOL
 	}
 }
 
