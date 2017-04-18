@@ -60,7 +60,7 @@ enum MCP23017_interruptPinMode_t {openDrain, lowOnInt, highOnInt};
 
 static const uint8_t defaultAddress = 0x20;
 
-class MCP23017: public wireUtil<MCP23017_Register_t>
+class MCP23017: public wireUtil<MCP23017_Register_t, uint8_t>
 {
 public:
 	using wireUtil::begin;
