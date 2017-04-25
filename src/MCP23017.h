@@ -1,7 +1,7 @@
 /**
  * @file	MCP23017.h
  * @author	Keegan Morrow
- * @version 0.1.2
+ * @version 0.1.3
  * @brief Arduino library for the Microchip MCP23017 IO Expander
  *
  */
@@ -11,7 +11,7 @@
 
 #include <Arduino.h>
 #include <Wire.h>
-#include "utility/wireUtil.h"
+#include <wireUtil.h>
 
 enum MCP23017_Register_t
 {
