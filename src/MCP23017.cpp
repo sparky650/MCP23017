@@ -145,7 +145,7 @@ uint16_t MCP23017::readChip()
 {
 	uint16_t state;
 	state = readRegister(GPIOA_r);
-	state &= (readRegister(GPIOB_r) << 8);
+	state |= (readRegister(GPIOB_r) << 8);
 	return state;
 }
 
